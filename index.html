@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to create a website for commercial transactions</title>
+  <meta name="description" content="A practical guide to building a shop on the web: domain, HTML, front end, back end, secure login, shopping cart, and a payment page that never stores the card.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e4d3a'/%3E%3Cpath d='M9 12.5h14v11H9z' fill='none' stroke='%23f4efe6' stroke-width='1.6'/%3E%3Cpath d='M9 16.5h14M16 16.5v7' stroke='%23f4efe6' stroke-width='1.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f3eee4;
+      --sheet: #fbf8f2;
+      --ink: #1c1915;
+      --muted: #5c554b;
+      --line: #e0d5c6;
+      --accent: #1e4d3a;
+      --accent-soft: #e6f0ea;
+      --brass: #8a6733;
+      --code: #16211c;
+      --code-text: #e8e3d8;
+      --shadow: 0 24px 60px rgba(48, 36, 18, 0.07);
+      --serif: "Fraunces", "Iowan Old Style", Palatino, Georgia, serif;
+      --sans: "Outfit", "Segoe UI", sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+      --measure: 40rem;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 420px at 0% -10%, rgba(30, 77, 58, 0.08), transparent 55%),
+        radial-gradient(700px 380px at 100% 0%, rgba(138, 103, 51, 0.13), transparent 50%),
+        var(--paper);
+      font-family: var(--sans);
+      font-size: 1.0625rem;
+      line-height: 1.65;
+      color-scheme: light;
+    }
+    ::selection { background: #d5e6db; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    img { max-width: 100%; }
+
+    .skip {
+      position: absolute;
+      left: 1rem;
+      top: -3rem;
+      background: var(--ink);
+      color: var(--sheet);
+      padding: 0.5rem 0.8rem;
+      z-index: 20;
+    }
+    .skip:focus { top: 1rem; }
+
+    .wrap {
+      width: min(68rem, calc(100% - 2.5rem));
+      margin-inline: auto;
+    }
+
+    .hero {
+      padding: 2.2rem 0 2.6rem;
+    }
+    .eyebrow {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: baseline;
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin: 0 0 1.6rem;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.8fr);
+      gap: 2.5rem;
+      align-items: end;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(2.8rem, 6.2vw, 4.8rem);
+      line-height: 0.98;
+      letter-spacing: -0.035em;
+      margin: 0;
+      max-width: 8.4em;
+      text-wrap: balance;
+    }
+    .lede {
+      margin: 1.25rem 0 0;
+      max-width: 38rem;
+      font-size: 1.16rem;
+      color: var(--muted);
+    }
+    .hero-card {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 1.15rem 1.2rem 1.05rem;
+    }
+    .hero-card ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .hero-card li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+      padding: 0.62rem 0;
+      border-top: 1px solid var(--line);
+      font-size: 0.98rem;
+    }
+    .hero-card li:first-child { border-top: 0; padding-top: 0.15rem; }
+    .hero-card strong { display: block; font-weight: 600; }
+    .hero-card span { color: var(--muted); font-size: 0.92rem; }
+    .mark {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brass);
+      padding-top: 0.35rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 14.5rem minmax(0, var(--measure));
+      gap: 3.5rem;
+      align-items: start;
+      padding-bottom: 5rem;
+    }
+    .rail {
+      position: sticky;
+      top: 1.25rem;
+      padding-top: 0.4rem;
+    }
+    .rail p {
+      margin: 0 0 0.7rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .rail ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .rail a {
+      display: grid;
+      grid-template-columns: 1.7rem 1fr;
+      gap: 0.35rem;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.3;
+      padding: 0.38rem 0.45rem;
+      border-left: 2px solid transparent;
+    }
+    .rail a small {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+    .rail a.is-active {
+      color: var(--ink);
+      border-left-color: var(--accent);
+      background: linear-gradient(90deg, var(--accent-soft), transparent 80%);
+    }
+    .rail a:hover { color: var(--ink); }
+
+    .step { scroll-margin-top: 1.5rem; padding: 2.5rem 0; border-top: 1px solid var(--line); }
+    .step h2 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(1.85rem, 3vw, 2.45rem);
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      margin: 0.25rem 0 0.9rem;
+      text-wrap: balance;
+    }
+    .num {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    h3 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 1.35rem;
+      margin: 1.6rem 0 0.45rem;
+      letter-spacing: -0.02em;
+    }
+    p { margin: 0.75rem 0; }
+    a { color: var(--accent); }
+    ol.steps, ul.clean { margin: 0.6rem 0 0.8rem; padding-left: 1.15rem; }
+    ol.steps li, ul.clean li { margin: 0.35rem 0; padding-left: 0.2rem; }
+    .done {
+      margin-top: 1.2rem;
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      padding: 0.75rem 0.95rem;
+    }
+    .done strong {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .sheet {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 1rem 1.1rem;
+      margin: 1.2rem 0;
+    }
+    .sheet h3 { margin-top: 0.3rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.96rem; }
+    th, td { text-align: left; vertical-align: top; padding: 0.55rem 0.45rem; border-bottom: 1px solid var(--line); }
+    th {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .scroll { overflow-x: auto; margin: 1rem 0; }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.6rem;
+      margin: 1rem 0 0.4rem;
+      padding: 0;
+      list-style: none;
+    }
+    .flow li {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      padding: 0.75rem 0.7rem 0.65rem;
+      min-height: 6.2rem;
+      position: relative;
+    }
+    .flow li::after {
+      content: "";
+      position: absolute;
+      right: -0.45rem;
+      top: 50%;
+      width: 0.45rem;
+      height: 1px;
+      background: var(--brass);
+    }
+    .flow li:last-child::after { display: none; }
+    .flow strong { display: block; font-size: 0.98rem; }
+    .flow span { color: var(--muted); font-size: 0.86rem; }
+
+    .pages {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 0.8rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .pages li {
+      border: 1px solid var(--line);
+      background: var(--sheet);
+      padding: 0.28rem 0.6rem;
+      font-size: 0.92rem;
+    }
+
+    .tree {
+      font-family: var(--mono);
+      font-size: 0.86rem;
+      line-height: 1.7;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 1rem 1.1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+    .tree em { color: #b7c9be; font-style: normal; }
+
+    figure { margin: 1.15rem 0; }
+    figcaption {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    pre {
+      margin: 0;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 0.95rem 1rem 1.05rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+    code { font-family: var(--mono); }
+    p code, li code, td code {
+      font-size: 0.86em;
+      background: rgba(30, 77, 58, 0.08);
+      padding: 0.05em 0.32em;
+    }
+    .cmt { color: #8aa394; font-style: italic; }
+    .kw { color: #f0d7a4; }
+    .st { color: #d5eccf; }
+    .fn { color: #f3efe6; }
+
+    .who td:nth-child(n+2), .who th:nth-child(n+2) { text-align: center; width: 18%; }
+    .yes { color: var(--accent); font-weight: 600; }
+    .no { color: var(--muted); }
+
+    .cart {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 0.4rem 1rem 1rem;
+      margin-top: 0.8rem;
+    }
+    .cart-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 0.8rem;
+      align-items: center;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .cart-row p { margin: 0; }
+    .cart-row .price { color: var(--muted); font-size: 0.92rem; }
+    .qty-ctl { display: flex; align-items: center; gap: 0.35rem; }
+    .qty-ctl button, .btn {
+      font: inherit;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .qty-ctl button {
+      width: 1.9rem;
+      height: 1.9rem;
+      border-radius: 999px;
+    }
+    .qty { min-width: 1.2rem; text-align: center; font-variant-numeric: tabular-nums; }
+    .line { font-variant-numeric: tabular-nums; min-width: 4.5rem; text-align: right; }
+    .totals { margin-top: 0.8rem; }
+    .totals div {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.2rem 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .totals .grand {
+      margin-top: 0.35rem;
+      padding-top: 0.55rem;
+      border-top: 1px solid var(--line);
+      font-family: var(--serif);
+      font-size: 1.45rem;
+    }
+    .note { color: var(--muted); font-size: 0.92rem; }
+
+    .beats { list-style: none; margin: 0.4rem 0 0; padding: 0; }
+    .beats li {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      padding: 1rem 1.05rem 0.9rem;
+      margin-top: 0.55rem;
+    }
+    .beats .beat {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brass);
+    }
+    .beats h3 { margin: 0.2rem 0 0.35rem; }
+    .beats p { margin: 0.35rem 0; }
+    .controls { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.8rem; }
+    .btn {
+      padding: 0.45rem 0.85rem;
+      background: var(--accent);
+      color: #f6f3ec;
+      border-color: var(--accent);
+    }
+    .btn.ghost { background: transparent; color: var(--ink); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    #pay-label { margin: 0; font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.92rem; }
+    #pay-widget.is-live .beats li { display: none; }
+    #pay-widget.is-live .beats li.is-on { display: block; }
+
+    .checks { list-style: none; margin: 0.6rem 0 0; padding: 0; }
+    .checks li {
+      display: grid;
+      grid-template-columns: 1.3rem 1fr;
+      gap: 0.65rem;
+      align-items: start;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .checks input { margin-top: 0.35rem; accent-color: var(--accent); width: 1rem; height: 1rem; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 1.4rem 0 2.4rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid, .layout { grid-template-columns: 1fr; gap: 1.25rem; }
+      .rail {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: rgba(243, 238, 228, 0.94);
+        backdrop-filter: blur(10px);
+        padding: 0.55rem 0;
+        margin: 0 -0.2rem;
+      }
+      .rail p { display: none; }
+      .rail ol { display: flex; gap: 0.25rem; overflow-x: auto; }
+      .rail a {
+        border-left: 0;
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        grid-template-columns: auto auto;
+      }
+      .rail a.is-active { background: transparent; border-bottom-color: var(--accent); }
+      .flow { grid-template-columns: 1fr 1fr; }
+      .flow li::after { display: none; }
+      .step { scroll-margin-top: 4.5rem; }
+      .cart-row { grid-template-columns: 1fr auto; }
+      .line { grid-column: 2; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+    @media print {
+      .rail, .controls, .skip { display: none !important; }
+      body { background: white; }
+      .layout { display: block; }
+      pre, .tree { white-space: pre-wrap; }
+      #pay-widget.is-live .beats li { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to the guide</a>
+
+  <header class="hero wrap">
+    <p class="eyebrow"><span>Field guide</span><span>Twelve steps</span></p>
+    <div class="hero-grid">
+      <div>
+        <h1>How to create a website for commercial transactions</h1>
+        <p class="lede">A shop on the web is a set of pages plus a private server. The customer browses, signs in, fills a cart, and pays. You register the domain, write the HTML, the front end, and the back end, then protect the login and hand the card to a payment company.</p>
+      </div>
+      <aside class="hero-card" aria-label="What this guide builds">
+        <ol>
+          <li><span class="mark">Name</span><div><strong>A name you control</strong><span>Domain, host, and HTTPS</span></div></li>
+          <li><span class="mark">Code</span><div><strong>The site’s code</strong><span>HTML pages, front end, back end</span></div></li>
+          <li><span class="mark">Login</span><div><strong>A secure login</strong><span>Hashed passwords and a session</span></div></li>
+          <li><span class="mark">Pay</span><div><strong>Cart and payment</strong><span>Server totals, card kept off your disk</span></div></li>
+        </ol>
+      </aside>
+    </div>
+  </header>
+
+  <div class="layout wrap">
+    <nav class="rail" aria-label="Steps">
+      <p>On this page</p>
+      <ol>
+        <li><a href="#overview"><small>—</small>Overview</a></li>
+        <li><a href="#terms"><small>01</small>The sale</a></li>
+        <li><a href="#domain"><small>02</small>Domain</a></li>
+        <li><a href="#host"><small>03</small>Host and HTTPS</a></li>
+        <li><a href="#plan"><small>04</small>Pages and data</a></li>
+        <li><a href="#frontend"><small>05</small>Front end</a></li>
+        <li><a href="#backend"><small>06</small>Back end</a></li>
+        <li><a href="#login"><small>07</small>Secure login</a></li>
+        <li><a href="#cart"><small>08</small>Shopping cart</a></li>
+        <li><a href="#payment"><small>09</small>Payment page</a></li>
+        <li><a href="#policies"><small>10</small>Policies</a></li>
+        <li><a href="#test"><small>11</small>Test a sale</a></li>
+        <li><a href="#launch"><small>12</small>Launch</a></li>
+        <li><a href="#checklist"><small>✓</small>Checklist</a></li>
+      </ol>
+    </nav>
+
+    <main id="content">
+      <section class="step" id="overview">
+        <p class="num">Overview</p>
+        <h2>The path of one paid order</h2>
+        <p>Someone finds the shop, chooses a thing, proves who they are, and pays a known amount. Each box below is a piece you will build. The rest of this page is the order to build them in.</p>
+        <ol class="flow">
+          <li><strong>Arrive</strong><span>The domain resolves, and HTTPS opens the catalog.</span></li>
+          <li><strong>Choose</strong><span>The cart stores product ids and quantities.</span></li>
+          <li><strong>Sign in</strong><span>The server checks a password hash and starts a session.</span></li>
+          <li><strong>Pay</strong><span>The payment company takes the card. Your server records the order.</span></li>
+        </ol>
+        <p>You can buy a hosted shop and skip most of the code. This guide is the other road: your own pages, your own server, and a payment company for the money.</p>
+        <div class="scroll">
+          <table class="who">
+            <caption class="note">Who is allowed to see each part of a sale.</caption>
+            <thead>
+              <tr><th>Work</th><th>Browser</th><th>Your server</th><th>Payment company</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Show the catalog</td><td class="yes">Shows it</td><td class="yes">Sends it</td><td class="no">—</td></tr>
+              <tr><td>Check the password</td><td class="yes">Shows the form</td><td class="yes">Checks the hash</td><td class="no">—</td></tr>
+              <tr><td>Remember the cart</td><td class="yes">Shows it</td><td class="yes">Stores it</td><td class="no">—</td></tr>
+              <tr><td>Read the card number</td><td class="no">Only their field</td><td class="no">Never</td><td class="yes">Yes</td></tr>
+              <tr><td>Decide the order is paid</td><td class="yes">Shows the result</td><td class="yes">After a signed message</td><td class="yes">Captures the money</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="step" id="terms">
+        <p class="num">Step 01</p>
+        <h2>Write down the sale before you name the site</h2>
+        <p>Code follows the offer. If the offer is vague, the database and the checkout will be vague too. Spend an hour on paper.</p>
+        <ul class="clean">
+          <li>What you sell, in one sentence, and the currency.</li>
+          <li>Each product: name, price, stock, a photo, and a short description.</li>
+          <li>Whether a guest may pay, or an account is required.</li>
+          <li>Where you ship, or whether the goods are a file or a service.</li>
+          <li>How a refund works, and in how many days.</li>
+          <li>The seller’s legal name and a contact address customers can use.</li>
+        </ul>
+        <p>Tax and invoices depend on where you and the buyer are. Note the question now. An accountant or your payment company’s tax tool answers it. A guessed rate in the code does not.</p>
+        <p class="done"><strong>Done when</strong> a stranger can read your notes and know what is for sale, what it costs, and how to get their money back.</p>
+      </section>
+
+      <section class="step" id="domain">
+        <p class="num">Step 02</p>
+        <h2>Get the domain name</h2>
+        <p>The domain is the address, such as <code>northlinen.example</code>. It is the name people type and the name that appears in emails from the shop. It is not the website itself. The website comes later, on a server the name points to.</p>
+        <ol class="steps">
+          <li>Search the name at a domain registrar. Common ones are Cloudflare Registrar, Namecheap, Porkbun, Squarespace Domains, and the registrar for your country.</li>
+          <li>Pick a name people can say and spell. Skip hyphens and clever misspellings. If the best name is taken, a small change is better than a name customers will mistype.</li>
+          <li>Register it to yourself or to the company. Keep it off a contractor’s personal account, so you still own it if you part ways.</li>
+          <li>Turn on automatic renewal. A domain that expires takes the whole shop offline. Put a second factor on the registrar login.</li>
+          <li>Turn on privacy for the public contact record if you do not want a home address listed in the public directory.</li>
+          <li>Wait to edit DNS until a host gives you an address. You will then add the records they specify, usually an A record or a CNAME, so the name leads to your server.</li>
+        </ol>
+        <div class="sheet">
+          <h3>Name, directory, machine</h3>
+          <p>Three different things get mixed together. The <strong>domain</strong> is the name you rent from a registrar. <strong>DNS</strong> is the directory that maps that name to an address. <strong>Hosting</strong> is the computer that answers. You can change the host later and keep the same domain, by changing the directory entry.</p>
+        </div>
+        <p class="done"><strong>Done when</strong> you can sign in at the registrar, the name is yours, and renewal will happen without you remembering.</p>
+      </section>
+
+      <section class="step" id="host">
+        <p class="num">Step 03</p>
+        <h2>Choose a host and turn on HTTPS</h2>
+        <p>Hosting is the computer that stores the code and answers visitors. A managed host is the calmer start: you upload the site, and they run the machine. A virtual server is the start when you want to install the app and the database yourself.</p>
+        <p>Turn on HTTPS before any login or payment page is public. HTTPS encrypts the path between the browser and your server. Browsers mark plain HTTP as not secure, and a password or a checkout on HTTP is not a finished shop.</p>
+        <ul class="clean">
+          <li>Ask the host for a TLS certificate. Let’s Encrypt is free, and most hosts arrange it for you.</li>
+          <li>Redirect every <code>http://</code> request to <code>https://</code>.</li>
+          <li>Let the certificate renew on its own. Many of them expire in about 90 days.</li>
+          <li>Open the site by the real domain, so you notice mixed content and broken links while the shop is still private.</li>
+        </ul>
+        <p class="done"><strong>Done when</strong> the address bar shows a lock, and the <code>http://</code> address jumps to <code>https://</code>.</p>
+      </section>
+
+      <section class="step" id="plan">
+        <p class="num">Step 04</p>
+        <h2>Plan the HTML pages and the records</h2>
+        <p>Draw the site as a short list of pages, then as a short list of records. The front end is the pages. The back end keeps the records and decides what each page may show.</p>
+        <ul class="pages" aria-label="Pages a shop needs">
+          <li>Home</li>
+          <li>Catalog</li>
+          <li>Product</li>
+          <li>Cart</li>
+          <li>Sign in</li>
+          <li>Create account</li>
+          <li>Reset password</li>
+          <li>Checkout</li>
+          <li>Confirmation</li>
+          <li>Your orders</li>
+          <li>Privacy</li>
+          <li>Terms</li>
+          <li>Refunds</li>
+        </ul>
+        <div class="scroll">
+          <table>
+            <caption class="note">Records worth creating on day one. Prices are integers in the smallest currency unit, so $48.00 is stored as 4800 cents. That avoids binary rounding.</caption>
+            <thead>
+              <tr><th>Record</th><th>Keeps</th><th>Leaves out</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>User</td><td>Email, password hash, role</td><td>The password itself</td></tr>
+              <tr><td>Product</td><td>Sku, name, price in cents, stock, description</td><td>A price typed only into the HTML</td></tr>
+              <tr><td>Cart line</td><td>User or guest id, sku, quantity</td><td>A total the browser invented</td></tr>
+              <tr><td>Order</td><td>Lines, shipping, tax, status, payment reference</td><td>The full card number and the security code</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Give each order a status you can say out loud: <code>draft</code>, <code>unpaid</code>, <code>paid</code>, <code>failed</code>, <code>refunded</code>. The confirmation page reads that status. It does not invent it.</p>
+        <p class="done"><strong>Done when</strong> every moment of a sale has a page, and every fact you must remember has a record.</p>
+      </section>
+
+      <section class="step" id="frontend">
+        <p class="num">Step 05</p>
+        <h2>Write the front end</h2>
+        <p>The front end is what the browser draws. HTML names the parts of the page. CSS sets type, space, and a layout that works on a phone. JavaScript reacts to clicks, such as adding an item or showing an error.</p>
+        <p>Plain HTML, CSS, and JavaScript are enough for a first shop. A framework is a later choice, when the pages grow. The first sale does not depend on one.</p>
+        <figure>
+          <figcaption>Browser · HTML · a product the customer can act on</figcaption>
+          <pre><code>&lt;article class="product"&gt;
+  &lt;img src="/media/linen-shirt.jpg" alt="Stone linen shirt, folded"&gt;
+  &lt;h2&gt;Stone linen shirt&lt;/h2&gt;
+  &lt;p class="price"&gt;$48.00&lt;/p&gt;
+  &lt;button type="button" data-sku="shirt-stone"&gt;Add to cart&lt;/button&gt;
+&lt;/article&gt;</code></pre>
+        </figure>
+        <figure>
+          <figcaption>Browser · JavaScript · ask the server to keep the line</figcaption>
+          <pre><code><span class="kw">async function</span> <span class="fn">addToCart</span>(sku) {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="st">"/api/cart"</span>, {
+    method: <span class="st">"POST"</span>,
+    headers: { <span class="st">"Content-Type"</span>: <span class="st">"application/json"</span> },
+    body: JSON.stringify({ sku, quantity: 1 })
+  });
+  <span class="kw">if</span> (!response.ok) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="st">"Could not add the item"</span>);
+  <span class="kw">return</span> response.json();
+}</code></pre>
+        </figure>
+        <p>The button sends a product id. It does not send a price. The server looks up the price. Build the pages with real labels, buttons, and headings, so the shop works from a keyboard and with a screen reader. Put no secret in the HTML. Anyone can read the page source.</p>
+        <p class="done"><strong>Done when</strong> a product page is readable on a phone, and Add to cart sends the sku to your server.</p>
+      </section>
+
+      <section class="step" id="backend">
+        <p class="num">Step 06</p>
+        <h2>Write the back end</h2>
+        <p>The back end is the private half. It reads and writes the database, checks who is signed in, computes money, and holds the only copy of the payment secret. The browser asks. The server decides.</p>
+        <p>Python, JavaScript on the server, PHP, Ruby, and many other languages can do this job. Pick one you can maintain. A relational database such as PostgreSQL fits orders, because an order, its lines, and its payment status belong together.</p>
+        <figure>
+          <figcaption>A small shape for the code. The secret file stays off the public site and out of git.</figcaption>
+          <div class="tree">shop/
+  web/            <em>front end: HTML, CSS, browser JavaScript</em>
+    index.html
+    styles.css
+    cart.js
+  server/         <em>back end: accounts, cart, orders, payment calls</em>
+    app.py
+  .env            <em>secret keys, never published</em>
+  .gitignore      <em>lists .env</em></div>
+        </figure>
+        <p>A first shop needs a handful of routes:</p>
+        <ul class="clean">
+          <li><code>GET /products</code> returns the catalog from the database.</li>
+          <li><code>POST /api/cart</code> adds or updates a line.</li>
+          <li><code>POST /login</code> checks the password and starts a session.</li>
+          <li><code>POST /checkout</code> prices the order and opens payment.</li>
+          <li><code>POST /webhooks/payment</code> receives the payment result.</li>
+        </ul>
+        <figure>
+          <figcaption>Server · sketch · the price is read here, then stored on the line</figcaption>
+          <pre><code><span class="kw">def</span> <span class="fn">add_line</span>(user_id, sku, quantity):
+    product = db.get_product(sku)
+    <span class="kw">if</span> product <span class="kw">is</span> None <span class="kw">or not</span> product.for_sale:
+        <span class="kw">raise</span> NotForSale()
+    <span class="kw">if</span> quantity &lt; 1 <span class="kw">or</span> quantity &gt; product.stock:
+        <span class="kw">raise</span> BadQuantity()
+    db.upsert_cart_line(
+        user_id=user_id,
+        sku=sku,
+        quantity=quantity,
+        unit_price_cents=product.price_cents,
+    )</code></pre>
+        </figure>
+        <p>That sketch leaves out error messages, validation, and tests. Those belong in the real file. The rule to keep is the one on the page: the charged price is loaded from your database at the moment it matters.</p>
+        <p class="done"><strong>Done when</strong> adding the same sku twice updates one line, and the unit price in that line came from the database.</p>
+      </section>
+
+      <section class="step" id="login">
+        <p class="num">Step 07</p>
+        <h2>Build a secure login</h2>
+        <p>A login is a form, a check, and a session. The form collects an email and a password over HTTPS. The server compares the password with a stored hash. If it matches, the server starts a session and sends the session id in a cookie.</p>
+        <h3>What the account page needs</h3>
+        <ul class="clean">
+          <li>Create account, with a long password. A phrase the customer can remember beats a short puzzle.</li>
+          <li>Sign in, with one message for a bad attempt: “Email or password is wrong.” That avoids telling a stranger which emails are registered.</li>
+          <li>Forgot password. Send a single-use link that expires in about an hour. Store a hash of the token, the way you store a hash of the password.</li>
+          <li>Sign out, which ends the session on the server.</li>
+        </ul>
+        <figure>
+          <figcaption>Server · sketch · a library salts and hashes. You store the result.</figcaption>
+          <pre><code><span class="cmt"># Argon2id or bcrypt. Both are slow on purpose.</span>
+<span class="kw">from</span> argon2 <span class="kw">import</span> PasswordHasher
+ph = PasswordHasher()
+
+<span class="kw">def</span> <span class="fn">register</span>(email, password):
+    password_hash = ph.hash(password)
+    db.save_user(email=email, password_hash=password_hash)</code></pre>
+        </figure>
+        <div class="sheet">
+          <h3>Session cookie</h3>
+          <p>After a successful sign-in, create a new random session id. Setting a fresh id at login closes a class of session mix-ups. Send it as a cookie with three flags:</p>
+          <ul class="clean">
+            <li><code>HttpOnly</code>, so page scripts cannot read it.</li>
+            <li><code>Secure</code>, so the browser sends it only over HTTPS.</li>
+            <li><code>SameSite</code>, usually <code>Lax</code> or <code>Strict</code>, so other sites cannot quietly use it.</li>
+          </ul>
+          <p>Because the cookie identifies the customer, state-changing forms also need a CSRF token that your server checks. Limit how fast login can be tried, so guessing is slow. Offer a second factor, such as an authenticator app, at least for any staff account that can see orders.</p>
+        </div>
+        <p>An admin page that lists orders uses the same login, then checks a role on the server. Hiding the link in the HTML is not the check. The route itself refuses a customer account.</p>
+        <p class="done"><strong>Done when</strong> a wrong password fails with a generic message, a right password starts a cookie with those three flags, and the password in the database is a hash.</p>
+      </section>
+
+      <section class="step" id="cart">
+        <p class="num">Step 08</p>
+        <h2>Build the shopping cart</h2>
+        <p>A cart is a list of sku and quantity, tied to a signed-in user or to a guest session. The cart page shows each line, lets the customer change a quantity, and shows a total that the server calculated.</p>
+        <ul class="clean">
+          <li>Adding an item calls <code>POST /api/cart</code>. The server loads the product and writes the line.</li>
+          <li>Changing quantity updates that line. Zero removes it. Quantities are whole numbers.</li>
+          <li>A guest cart lives with a random id in a cookie. When the guest signs in, merge those lines into the account cart.</li>
+          <li>At checkout, read the price and the stock again. If a price changed, show the new total before payment. If stock is short, stop and say so.</li>
+          <li>Keep a copy of the name and unit price on the order line, so a later catalog edit does not rewrite history.</li>
+        </ul>
+        <figure>
+          <figcaption>On this page only · change the quantities. Nothing is saved or charged. Shipping is a flat example. Tax is an example rate, not a rule for your country.</figcaption>
+          <div class="cart" id="demo-cart">
+            <div class="cart-row" data-cents="4800">
+              <p><strong>Stone linen shirt</strong><br><span class="price">$48.00</span></p>
+              <div class="qty-ctl">
+                <button type="button" data-minus aria-label="Decrease Stone linen shirt">−</button>
+                <span class="qty">1</span>
+                <button type="button" data-plus aria-label="Increase Stone linen shirt">+</button>
+              </div>
+              <span class="line">$48.00</span>
+            </div>
+            <div class="cart-row" data-cents="3600">
+              <p><strong>Ceramic pour-over</strong><br><span class="price">$36.00</span></p>
+              <div class="qty-ctl">
+                <button type="button" data-minus aria-label="Decrease Ceramic pour-over">−</button>
+                <span class="qty">1</span>
+                <button type="button" data-plus aria-label="Increase Ceramic pour-over">+</button>
+              </div>
+              <span class="line">$36.00</span>
+            </div>
+            <div class="cart-row" data-cents="1800">
+              <p><strong>Ruled notebook</strong><br><span class="price">$18.00</span></p>
+              <div class="qty-ctl">
+                <button type="button" data-minus aria-label="Decrease Ruled notebook">−</button>
+                <span class="qty">0</span>
+                <button type="button" data-plus aria-label="Increase Ruled notebook">+</button>
+              </div>
+              <span class="line">$0.00</span>
+            </div>
+            <div class="totals" aria-live="polite">
+              <div><span>Subtotal</span><span id="demo-sub">$84.00</span></div>
+              <div><span>Shipping</span><span id="demo-ship">$6.00</span></div>
+              <div><span>Tax, example 8%</span><span id="demo-tax">$6.72</span></div>
+              <div class="grand"><span>Total</span><span id="demo-total">$96.72</span></div>
+            </div>
+          </div>
+        </figure>
+        <p class="note">On a real site those four numbers are computed again on the server when the customer presses Pay. The figures in the browser are a preview.</p>
+        <p class="done"><strong>Done when</strong> the cart survives a refresh, a guest cart joins the account at sign-in, and checkout rechecks price and stock.</p>
+      </section>
+
+      <section class="step" id="payment">
+        <p class="num">Step 09</p>
+        <h2>Build the secure payment page</h2>
+        <p>The payment page shows the order the server priced: lines, shipping, tax, and total. The card number goes to a payment company such as Stripe, PayPal, Adyen, or Square. Your server stores a payment reference and the order. It does not store the full card number or the security code.</p>
+        <p>Two patterns keep that promise. In a <strong>hosted checkout</strong>, you send the customer to the payment company’s page for the card. In an <strong>embedded form</strong>, their script draws the card fields inside your page, and your server receives a token. In both patterns your secret key stays on the server, and the card data stays with the company that is allowed to hold it. That is also what keeps your own compliance burden smaller.</p>
+        <div id="pay-widget">
+          <ol class="beats" id="pay-steps">
+            <li>
+              <p class="beat">Beat 01</p>
+              <h3>The server prices the order</h3>
+              <p>The customer presses Pay. Your server writes an order with status <code>unpaid</code>. It totals the lines from the database, then adds the shipping and tax it is responsible for. That total is the only amount you will charge.</p>
+            </li>
+            <li>
+              <p class="beat">Beat 02</p>
+              <h3>Your server opens a checkout</h3>
+              <p>The server calls the payment company with the order id, the amount in cents, and the currency. The call uses the secret key. The browser never sees that key. The company returns a page or a client token for this exact charge.</p>
+            </li>
+            <li>
+              <p class="beat">Beat 03</p>
+              <h3>The customer enters the card</h3>
+              <p>They type the card into the payment company’s form. Your confirmation copy can say, in plain language, that the payment company processes the card and that you do not keep the full number.</p>
+            </li>
+            <li>
+              <p class="beat">Beat 04</p>
+              <h3>The payment company captures the money</h3>
+              <p>They approve or decline the charge. A decline returns the customer to the cart with a clear message and the same unpaid order, or a fresh attempt. Stock is still unchanged.</p>
+            </li>
+            <li>
+              <p class="beat">Beat 05</p>
+              <h3>A signed message reaches your server</h3>
+              <p>The company sends a webhook. You check its signature before you trust it. Payment companies retry these messages, so marking an order paid must be safe to run twice. A second delivery finds the order already paid and stops.</p>
+            </li>
+            <li>
+              <p class="beat">Beat 06</p>
+              <h3>You record the sale and show the receipt</h3>
+              <p>Only after that signed message do you set the order to <code>paid</code>, reduce stock, and send a receipt. The receipt has the order number, the lines, and the total. It has no card data. If the customer lands on the thank-you page early, say that you are confirming the payment until the order status says paid.</p>
+            </li>
+          </ol>
+          <div class="controls" id="pay-controls" hidden>
+            <button type="button" class="btn ghost" id="pay-prev">Back</button>
+            <button type="button" class="btn" id="pay-next">Next beat</button>
+            <p id="pay-label">Beat 1 of 6</p>
+          </div>
+        </div>
+        <figure>
+          <figcaption>Server · sketch · open checkout, then trust only a signed webhook</figcaption>
+          <pre><code><span class="cmt">// Secret key stays on the server.</span>
+<span class="kw">const</span> session = <span class="kw">await</span> payments.<span class="fn">createCheckout</span>({
+  orderId: order.id,
+  amountCents: order.totalCents,
+  currency: <span class="st">"usd"</span>
+});
+
+<span class="cmt">// Later, on the webhook route:</span>
+<span class="kw">if</span> (!payments.<span class="fn">signatureIsValid</span>(request)) {
+  <span class="kw">return</span> reply.code(400).send(<span class="st">"invalid signature"</span>);
+}
+<span class="kw">if</span> (event.type === <span class="st">"payment.captured"</span>) {
+  <span class="fn">markPaidOnce</span>(event.orderId, event.paymentId);
+}</code></pre>
+        </figure>
+        <p>The thank-you address in the browser is a convenience. A customer can open it without paying. The webhook, with a valid signature, is the record that money moved.</p>
+        <p class="done"><strong>Done when</strong> a test payment flips an order to paid only after a verified webhook, and the database has no full card number.</p>
+      </section>
+
+      <section class="step" id="policies">
+        <p class="num">Step 10</p>
+        <h2>Publish the pages a shop owes people</h2>
+        <p>A commercial site is also a set of promises. Put them where a customer can find them before they pay, and in the footer of every page.</p>
+        <ul class="clean">
+          <li><strong>Privacy.</strong> What you collect (account, address, order), why, and the payment company that handles the card.</li>
+          <li><strong>Terms of sale.</strong> Who the seller is, when the contract is formed, and what happens if an item is out of stock after an order.</li>
+          <li><strong>Refunds.</strong> The window, who pays return shipping, and how the money goes back. Refund through the payment company so the order status and the money stay in step.</li>
+          <li><strong>Contact.</strong> An email or a form a person can use. Watch it.</li>
+          <li><strong>Receipt.</strong> Email the order number, lines, total, and that contact address after the order is paid.</li>
+        </ul>
+        <p>Consumer rules, tax, and what you may store differ by country. This guide cannot settle them. Use the payment company’s tools and a local advisor for the rates and the wording you are required to show.</p>
+        <p class="done"><strong>Done when</strong> privacy, terms, refunds, and a contact path are linked from the checkout page.</p>
+      </section>
+
+      <section class="step" id="test">
+        <p class="num">Step 11</p>
+        <h2>Rehearse a sale in test mode</h2>
+        <p>Payment companies publish test card numbers. Use those. Keep a real card out of test mode. Walk the path as a customer, on a phone width and on a wide screen.</p>
+        <ol class="steps">
+          <li>Create an account. Sign in with a wrong password, then the right one.</li>
+          <li>Reset a password from the email link, and confirm the old sessions ended.</li>
+          <li>Add items, change a quantity, remove a line, and refresh. The cart should still be there.</li>
+          <li>Sign in as a guest who already had a cart, and confirm the lines merged.</li>
+          <li>Pay with a test card that succeeds. Confirm the webhook set the order to paid, stock fell once, and the receipt arrived.</li>
+          <li>Pay with a test card that fails. Confirm the order stays unpaid and stock does not fall.</li>
+          <li>Deliver the same webhook again. Confirm the order is not charged twice in your records and stock does not fall twice.</li>
+          <li>Open the thank-you page for an unpaid order. The page should wait for confirmation.</li>
+        </ol>
+        <p class="done"><strong>Done when</strong> a successful test sale, a failed test sale, and a repeated webhook all leave the database in a state you can explain.</p>
+      </section>
+
+      <section class="step" id="launch">
+        <p class="num">Step 12</p>
+        <h2>Point the domain, then look after the shop</h2>
+        <p>Launch is the DNS change plus a short list of habits. At the registrar, add the records your host gave you. Wait for the name to resolve. Open the shop on the real domain and confirm the lock, the redirect, a sign-in, and one more test payment before you switch the payment company from test keys to live keys.</p>
+        <ul class="clean">
+          <li>Keep live secret keys in the server environment. Keep them out of the HTML, out of the repository, and out of screenshots.</li>
+          <li>Back up the database, and try a restore once so you know the backup works.</li>
+          <li>Update the server, the language, and the payment library when they ship security fixes.</li>
+          <li>Log errors. Leave passwords, cookies, and card fields out of the logs.</li>
+          <li>Watch failed payments and failed webhooks. Those are how you find a broken sale.</li>
+        </ul>
+        <p>Search, a richer gallery, and analytics can wait until a real order has gone through. They do not belong on the critical path of the first transaction.</p>
+        <p class="done"><strong>Done when</strong> the public domain serves HTTPS, live keys are only on the server, and you have a backup you have restored.</p>
+      </section>
+
+      <section class="step" id="checklist">
+        <p class="num">Before the first real charge</p>
+        <h2>A list you can tick</h2>
+        <p>Ticks stay in this browser. They are a rehearsal list, not a certificate.</p>
+        <ul class="checks">
+          <li><input id="c1" data-tick type="checkbox"><label for="c1">The domain is registered to you, and auto-renew is on.</label></li>
+          <li><input id="c2" data-tick type="checkbox"><label for="c2">DNS points at the host you intend.</label></li>
+          <li><input id="c3" data-tick type="checkbox"><label for="c3">Every page redirects to HTTPS, and the certificate renews itself.</label></li>
+          <li><input id="c4" data-tick type="checkbox"><label for="c4">Catalog, cart, login, and checkout are usable on a phone.</label></li>
+          <li><input id="c5" data-tick type="checkbox"><label for="c5">Prices and stock are read on the server at checkout.</label></li>
+          <li><input id="c6" data-tick type="checkbox"><label for="c6">Passwords are stored only as slow hashes.</label></li>
+          <li><input id="c7" data-tick type="checkbox"><label for="c7">The session cookie is HttpOnly, Secure, and SameSite.</label></li>
+          <li><input id="c8" data-tick type="checkbox"><label for="c8">Login attempts are rate-limited, and errors stay generic.</label></li>
+          <li><input id="c9" data-tick type="checkbox"><label for="c9">A guest cart merges into the account at sign-in.</label></li>
+          <li><input id="c10" data-tick type="checkbox"><label for="c10">The card is entered with the payment company. Your database has no full card number.</label></li>
+          <li><input id="c11" data-tick type="checkbox"><label for="c11">A signed webhook is what marks an order paid. A repeated webhook is safe.</label></li>
+          <li><input id="c12" data-tick type="checkbox"><label for="c12">The receipt email has the order and the total, and no card data.</label></li>
+          <li><input id="c13" data-tick type="checkbox"><label for="c13">Privacy, terms, refunds, and a contact path are public.</label></li>
+          <li><input id="c14" data-tick type="checkbox"><label for="c14">A full test purchase has succeeded, and a failed test card has not reduced stock.</label></li>
+          <li><input id="c15" data-tick type="checkbox"><label for="c15">Secret keys live only on the server, and a database backup has been restored once.</label></li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="wrap">
+      <p>A build guide for a first commercial website. It is not legal, tax, or payment-compliance advice. Laws differ by country, and card data belongs with a payment company set up to hold it.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll(".rail a"));
+      var sections = links.map(function (link) {
+        return document.querySelector(link.getAttribute("href"));
+      }).filter(Boolean);
+
+      if ("IntersectionObserver" in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            var id = "#" + entry.target.id;
+            links.forEach(function (link) {
+              var on = link.getAttribute("href") === id;
+              link.classList.toggle("is-active", on);
+              if (on) link.setAttribute("aria-current", "location");
+              else link.removeAttribute("aria-current");
+            });
+          });
+        }, { rootMargin: "-35% 0px -55% 0px", threshold: 0.01 });
+        sections.forEach(function (section) { observer.observe(section); });
+      }
+
+      var rows = document.querySelectorAll("#demo-cart [data-cents]");
+      function money(cents) {
+        return "$" + (cents / 100).toFixed(2);
+      }
+      function renderCart() {
+        var subtotal = 0;
+        rows.forEach(function (row) {
+          var qty = Number(row.querySelector(".qty").textContent);
+          var line = Number(row.dataset.cents) * qty;
+          row.querySelector(".line").textContent = money(line);
+          subtotal += line;
+        });
+        var shipping = subtotal === 0 ? 0 : 600;
+        var tax = Math.round(subtotal * 0.08);
+        document.getElementById("demo-sub").textContent = money(subtotal);
+        document.getElementById("demo-ship").textContent = money(shipping);
+        document.getElementById("demo-tax").textContent = money(tax);
+        document.getElementById("demo-total").textContent = money(subtotal + shipping + tax);
+      }
+      rows.forEach(function (row) {
+        var qtyEl = row.querySelector(".qty");
+        row.querySelector("[data-minus]").addEventListener("click", function () {
+          qtyEl.textContent = String(Math.max(0, Number(qtyEl.textContent) - 1));
+          renderCart();
+        });
+        row.querySelector("[data-plus]").addEventListener("click", function () {
+          qtyEl.textContent = String(Math.min(9, Number(qtyEl.textContent) + 1));
+          renderCart();
+        });
+      });
+      renderCart();
+
+      var beats = Array.prototype.slice.call(document.querySelectorAll("#pay-steps li"));
+      var payIndex = 0;
+      var prev = document.getElementById("pay-prev");
+      var next = document.getElementById("pay-next");
+      var label = document.getElementById("pay-label");
+      function showBeat() {
+        beats.forEach(function (beat, index) {
+          beat.classList.toggle("is-on", index === payIndex);
+        });
+        label.textContent = "Beat " + (payIndex + 1) + " of " + beats.length;
+        prev.disabled = payIndex === 0;
+        next.disabled = payIndex === beats.length - 1;
+      }
+      document.getElementById("pay-widget").classList.add("is-live");
+      document.getElementById("pay-controls").hidden = false;
+      prev.addEventListener("click", function () {
+        payIndex = Math.max(0, payIndex - 1);
+        showBeat();
+      });
+      next.addEventListener("click", function () {
+        payIndex = Math.min(beats.length - 1, payIndex + 1);
+        showBeat();
+      });
+      showBeat();
+
+      var saved = {};
+      try { saved = JSON.parse(localStorage.getItem("commercial-site-guide-checks") || "{}"); }
+      catch (e) { saved = {}; }
+      document.querySelectorAll("[data-tick]").forEach(function (box) {
+        if (saved[box.id]) box.checked = true;
+        box.addEventListener("change", function () {
+          saved[box.id] = box.checked;
+          try { localStorage.setItem("commercial-site-guide-checks", JSON.stringify(saved)); }
+          catch (e) {}
+        });
+      });
+    }());
+  </script>
+</body>
+</html>
